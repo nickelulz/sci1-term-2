@@ -26,19 +26,21 @@ def calculate_model_complexity(system) -> np.float64:
     """
     return (system.memory_depth - 1) + system.variance * system.size
 
-def calculate_variance(system) -> np.float64:
-    variance = np.zeros(system.number_of_coins)
-
-    for coin_index in range(system.number_of_coins):
-        probabilities = np.zeros(coin.number_of_outputs)
-
-        for output_index in range(coin.number_of_outputs):
-            probabilities[output_index] = system.probabilities[coin_index][output_index]
-        
-        u = np.sum(probabilities) / len(probabilities)
-        variance[coin_index] += np.sum((probabilities - u) **2)
-
-    return np.mean(variance)
+#might work on n-dimensional coins?, high variance means more spread out, low variance means more concentration over mean
+def calc_variance(P):
+  #for each output
+  n = P.shape[0]
+  # Solve the steady-state equation: (P^T - I)π = 0
+  A = P.T - np.eye(n)  # (P^T - I)
+  A[-1] = np.ones(n)   # Replace last row with normalization condition
+  # Right-hand side of the equation
+  b = np.zeros(n)
+  b[-1] = 1  # Normalization condition π1 + π2 = 1
+  # Solve the linear system
+  pi = np.linalg.lstsq(A, b, rcond=None)[0]
+  u = np.sum(pi)/len(pi)
+  k = 1 #modifier
+  return (np.sum((pi - u)**2))**(k)
 
 class CoinFlipEngine():
     def __init__(self, probabilities, markov, size, initial_coin_index=0, memory_depth=1):
