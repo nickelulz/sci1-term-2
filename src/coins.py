@@ -12,10 +12,7 @@ def calculate_theoretical_distribution(markov, probabilities) -> np.array:
     if len(markov) == 1:
         return probabilities[0]
     else:
-        TRANSITION_MAT = [[ 0.01, 0.01 ],
-                          [ 0.01, 0.01 ]]
-
-        M_power_40 = np.linalg.matrix_power(probabilities * TRANSITION_MAT, 40)
+        M_power_40 = np.linalg.matrix_power(np.array(probabilities) * 0.01, 40)
 
         # rounded to the nearest 0.1
         return np.round((M_power_40 * 100)[0], 1)
