@@ -24,10 +24,9 @@ def calculate_model_complexity(system) -> np.float64:
     return (system.memory_depth - 1) + system.variance * system.size
 
 def calculate_variance(system) -> np.float64:
-    """
+    '''
     Calculates the variance of a coin system
     (1) https://en.wikipedia.org/wiki/Variance
-    """
     # Solve the steady-state equation and normalize
     modifiers = system.probabilities.transpose() - np.eye(system.number_of_outputs) 
     modifiers[-1] = np.ones(system.number_of_outputs)
@@ -42,6 +41,9 @@ def calculate_variance(system) -> np.float64:
 
     # Biased estimate
     return np.mean((stationary_dist - mean_probability) ** 2) 
+    '''
+    #variance for one coin
+    return np.sum(system.probabilities[0] - (100/len(system.probabilities[0])))
 
 class CoinFlipEngine():
     def __init__(self, probabilities, markov, size, initial_coin_index=0, memory_depth=1):
