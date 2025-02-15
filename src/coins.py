@@ -24,33 +24,26 @@ def calculate_model_complexity(system) -> np.float64:
     return (system.memory_depth - 1) + system.variance * system.size
 
 def calculate_variance(system) -> np.float64:
-    '''
-    Calculates the variance of a coin system
-    (1) https://en.wikipedia.org/wiki/Variance
-    # Solve the steady-state equation and normalize
-    modifiers = system.probabilities.transpose() - np.eye(system.number_of_outputs) 
-    modifiers[-1] = np.ones(system.number_of_outputs)
-
-    # Right-hand side of the equation and normalize
-    dependents = np.zeros(system.number_of_outputs)
-    dependents[-1] = 1
-
-    # Solve the linear system
-    stationary_dist = np.linalg.lstsq(modifiers, dependents, rcond=None)[0]
-    mean_probability = np.sum(stationary_dist) / len(stationary_dist)
-
-    # Biased estimate
-    return np.mean((stationary_dist - mean_probability) ** 2) 
-    '''
-    #variance for one coin
-    return np.sum(system.probabilities[0] - (100/len(system.probabilities[0])))
+    """
+    Calculates the variance for a full coin system by calculating
+    the variance of each coin individually and summing them up, as defined
+    as the deviance from the mean (which is 100% divided by number of outputs,
+    i.e. the difference from this coin to its fully unbiased cousin)
+    """
+    total = 0
+    for coin_prob in system.probabilities:
+        coin_prob = coin_prob / 100 
+        coin_variance = np.sum(np.abs(coin_prob - 1 / len(coin_prob)))
+        total += coin_variance
+    return total
 
 class CoinFlipEngine():
-    def __init__(self, probabilities, markov, size, initial_coin_index=0, memory_depth=1):
+    def __init__(self, probabilities, markov, size, initial_coin_index=0, memory_depth=1, name=None):
         # only working with square matricies
         self.size = size
         self.number_of_coins = size
         self.number_of_outputs = size
+        self.name = name
 
         self.markov = markov
         self.probabilities = probabilities
@@ -63,11 +56,9 @@ class CoinFlipEngine():
         self.current_coin_index = initial_coin_index
         self.memory = []
 
-    def benchmark(self):
         self.theoretical_distribution = calculate_theoretical_distribution(markov, probabilities)
         self.variance = calculate_variance(self)
-        self.complexity = calculate_model_complexity(markov, probabilities)
-        self.model_convergence_benchmark, self.empirical_distribution = benchmark_model_convergence(self)
+        self.complexity = calculate_model_complexity(self)
 
     def reset_markov(self):
         self.current_coin_index = self.initial_coin_index
