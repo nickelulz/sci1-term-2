@@ -43,9 +43,8 @@ def calculate_variance(system) -> np.float64:
     i.e. the difference from this coin to its fully unbiased cousin)
     """
     total = 0
-    for coin_prob in system.probabilities:
-        coin_prob = coin_prob / 100 
-        coin_variance = np.sum(np.abs(coin_prob - np.mean(coin_prob)))
+    for coin_prob in (system.probabilities / 100):
+        coin_variance = np.sum(np.abs(coin_prob - 1 / system.number_of_outputs))
         total += coin_variance
     return total
 
