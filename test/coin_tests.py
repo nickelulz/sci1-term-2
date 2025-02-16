@@ -37,7 +37,16 @@ class CoinTests(TestCase):
         self.theo_dist_calc(coin.markov, coin.probabilities, expected) 
 
     def test_theo_dist_1(self):
-        self.theo_dist_calc([0, 0], [50, 50], [50, 50])
+        self.theo_dist_calc([[0, 0],[0, 0]], [[50, 50],[50, 50]], [50, 50])
+
+    def standing_dist_coin(self, coin):
+        dist = calculate_standing_distribution_2d(coin.probabilities)
+        print(coin.name, 'standing:', dist, 'theoretical:', coin.theoretical_distribution)
+    
+    def test_standing_dist(self):
+        print()
+        for coin in filter(lambda coin: coin.size == 2, ALL_COINS):
+            self.standing_dist_coin(coin)
 
     """
     Direct Coin Tests

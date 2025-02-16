@@ -3,6 +3,18 @@ import numpy as np
 import sys
 import random
 
+def calculate_standing_distribution_2d(probabilities):
+    """
+    Calculates standing distribution for 2D coins
+    """
+    p = probabilities[0][0] / 100
+    q = probabilities[1][0] / 100
+    denom = (1 - p + q)
+    if denom == 0:
+        raise ValueError(f'returned zero: p {p}, q {q}')
+    r = q / denom
+    return np.array([r, 1-r]) * 100
+
 def calculate_theoretical_distribution(markov, probabilities) -> np.array:
     """
     Calculates the theoretical probability distribution
@@ -33,7 +45,7 @@ def calculate_variance(system) -> np.float64:
     total = 0
     for coin_prob in system.probabilities:
         coin_prob = coin_prob / 100 
-        coin_variance = np.sum(np.abs(coin_prob - 1 / len(coin_prob)))
+        coin_variance = np.sum(np.abs(coin_prob - np.mean(coin_prob)))
         total += coin_variance
     return total
 
