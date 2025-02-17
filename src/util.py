@@ -1,4 +1,5 @@
 import numpy as np
+from hash_table import HashTable
 
 def weights_to_ranges(probability_array):
   """
@@ -25,3 +26,12 @@ def generate_random_distribution(n):
         distribution[index] += 1 if diff > 0 else -1
 
     return np.array(distribution.tolist())
+
+def interpret_individual_markov(markov_arr)
+    markov_ht = HashTable(len(markov_arr))
+    for coin, rule in enumerate(markov_arr):
+        markov_ht.insert((coin), rule)
+    return markov_ht
+
+def interpret_simple_markov(markov_arr):
+    return map(interpret_individual_markov, markov_arr)

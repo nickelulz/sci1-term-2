@@ -24,20 +24,19 @@ class CoinTests(TestCase):
     Theoretical Distribution Calculation Tests
     """
 
-    def theo_dist_calc(self, markov, probabilities, expected):
+    def theo_dist_calc(self, probabilities, expected):
         # sanitize input
-        markov = self.ensure_numpy_array(markov)
         probabilities = self.ensure_numpy_array(probabilities)
         expected = self.ensure_numpy_array(expected)
 
-        theo_dist = calculate_theoretical_distribution(markov, probabilities)
+        theo_dist = calculate_theoretical_distribution(probabilities)
         self.assert_equal_arrays(theo_dist, expected, 0.1)        
 
     def theo_dist_coin(self, coin, expected):
-        self.theo_dist_calc(coin.markov, coin.probabilities, expected) 
+        self.theo_dist_calc(coin.probabilities, expected) 
 
     def test_theo_dist_1(self):
-        self.theo_dist_calc([[0, 0],[0, 0]], [[50, 50],[50, 50]], [50, 50])
+        self.theo_dist_calc([[50, 50],[50, 50]], [50, 50])
 
     def standing_dist_coin(self, coin):
         dist = calculate_standing_distribution_2d(coin.probabilities)
@@ -56,7 +55,7 @@ class CoinTests(TestCase):
         self.theo_dist_coin(DEFAULT_COIN, [50, 50])
 
     def test_theo_dist_non_coin(self):
-        self.theo_dist_coin(NON_COIN, [100, 0])
+        self.theo_dist_coin(NON_COIN, [100])
 
     def test_theo_dist_simple_markov_1(self):
         self.theo_dist_coin(SIMPLE_MARKOV_1, [83.3, 16.7])
@@ -71,7 +70,7 @@ class CoinTests(TestCase):
     Convergence Tests
     """
     def coin_conv(self, coin):
-        theo_dist = calculate_theoretical_distribution(coin.markov, coin.probabilities)
+        theo_dist = calculate_theoretical_distribution(coin.probabilities)
         emp_dist = perform_coin_flips(coin, int(1e6)).empirical_distribution
         self.assert_equal_arrays(theo_dist, emp_dist, 0.1)
 

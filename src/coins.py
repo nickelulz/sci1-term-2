@@ -15,19 +15,16 @@ def calculate_standing_distribution_2d(probabilities):
     r = q / denom
     return np.array([r, 1-r]) * 100
 
-def calculate_theoretical_distribution(markov, probabilities) -> np.array:
+def calculate_theoretical_distribution(probabilities) -> np.array:
     """
     Calculates the theoretical probability distribution
     of the coin pool given its Markov Chain and input
     probability distribution matricies
     """
-    if len(markov) == 1:
-        return probabilities[0]
-    else:
-        M_power_40 = np.linalg.matrix_power(np.array(probabilities) * 0.01, 40)
+    M_power_40 = np.linalg.matrix_power(np.array(probabilities) * 0.01, 40)
 
-        # rounded to the nearest 0.1
-        return np.round((M_power_40 * 100)[0], 1)
+    # rounded to the nearest 0.1
+    return np.round((M_power_40 * 100)[0], 1)
 
 def calculate_model_complexity(system) -> np.float64:
     """
@@ -67,7 +64,7 @@ class CoinFlipEngine():
         self.current_coin_index = initial_coin_index
         self.memory = []
 
-        self.theoretical_distribution = calculate_theoretical_distribution(markov, probabilities)
+        self.theoretical_distribution = calculate_theoretical_distribution(probabilities)
         self.variance = calculate_variance(self)
         self.complexity = calculate_model_complexity(self)
 
@@ -84,12 +81,21 @@ class CoinFlipEngine():
         random_number = random.random()
 
         for output_index, threshold in enumerate(coin_thresholds):
+            # This is the output
             if random_number < threshold:
-                if print_on_switch:
-                    print(f'Coin Decision: {self.current_coin_index} -> ' + 
-                          '{self.markov[self.current_coin_index][output_index]} due to output {output_index}', file=output)
                 self.memory.append(output_index)
-                self.current_coin_index = self.markov[self.current_coin_index][output_index]
+            
+                # choose next coin
+                if len(self.memory) == self.memory_depth:
+
+                    # select next coin by searching the markov hashtable
+                    self.current_coin_index = self.markov[self.current_coin_index].search(tuple(self.memory))
+                    self.memory = []
+                    if print_on_switch:
+                        print(f'Coin Decision: {self.current_coin_index} -> ' + 
+                              f'{self.markov[self.current_coin_index][output_index]} due to output {output_index}', 
+                              file=output)
+
                 return output_index
 
     def __str__(self) -> str:

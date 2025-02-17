@@ -33,4 +33,4 @@ def calculate_model_error(input_model, output_model) -> float:
     complexity_pe = calculate_complexity_error(input_model.complexity,
                                                output_model.complexity)
 
-    return distribution_mse + complexity_pe
+    return distribution_mse * complexity_pe
