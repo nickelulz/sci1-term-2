@@ -27,11 +27,14 @@ def generate_random_distribution(n):
 
     return np.array(distribution.tolist())
 
-def interpret_individual_markov(markov_arr)
+def interpret_individual_markov(markov_arr: np.array) -> HashTable:
     markov_ht = HashTable(len(markov_arr))
     for coin, rule in enumerate(markov_arr):
-        markov_ht.insert((coin), rule)
+        markov_ht.insert((coin,), rule)
     return markov_ht
 
-def interpret_simple_markov(markov_arr):
-    return map(interpret_individual_markov, markov_arr)
+def interpret_simple_markov(markov_arr) -> list[HashTable]:
+    return [interpret_individual_markov(markov) for markov in markov_arr]
+
+def markov_next(markov: HashTable, current_coin: int, sequence: list[int]) -> int:
+    return markov[current_coin].search(tuple(sequence))

@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import numpy as np
 import sys
 from random import random
+from hash_table import HashTable
+from collections import defaultdict
 
 @dataclass
 class CoinFlipResult:
@@ -28,23 +30,20 @@ def perform_coin_flips(coin, number_of_flips, print_on_switch=False, output_file
 
     return CoinFlipResult(count_distribution, empirical_probabilities, flip_data, np.array(percent_data) * 100)
 
-def evaluate_sequence_probability_history(num_flips, num_outputs, flip_history, memory_depth=2):
-    # Dictionary to store sequence occurrences over time
+def evaluate_sequence_probability_history(num_outputs, flip_history, memory_depth=2) -> dict:
     sequence_counts = defaultdict(int)
-    sequence_history = defaultdict(list)
-
-    for i in range(num_flips - memory_depth + 1):
+    num_flips = len(flip_history)
+    total_sequences = num_flips - memory_depth + 1
+    
+    for i in range(total_sequences):
         sequence = tuple(flip_history[i:i + memory_depth])
         sequence_counts[sequence] += 1
-
-        # Calculate probabilities for each sequence
-        for a in range(num_outputs):
-            for b in range(num_outputs):
-                key = (a, b)
-                count = sequence_counts.get(key, 0)
-                sequence_history[key].append(count / (i + 1))
-
-    # Convert sequences to string format for better readability
-    formatted_history = {"-".join(map(str, key)): values for key, values in sequence_history.items()}
-
-    return formatted_history
+    
+    sequence_histogram = {} 
+    for sequence, count in sequence_counts.items():
+        sequence_histogram[sequence] = {
+            "count": count, 
+            "percentage": round((count / total_sequences) * 100, 1)
+        }
+    
+    return sequence_histogram

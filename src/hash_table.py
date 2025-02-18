@@ -13,13 +13,13 @@ class HashTable:
         self.capacity = capacity 
         self.size = 0
         self.table = [None] * capacity 
-  
+
     def _hash(self, key): 
         return hash(key) % self.capacity 
-  
+
     def insert(self, key, value): 
         index = self._hash(key) 
-  
+
         if self.table[index] is None: 
             self.table[index] = Node(key, value) 
             self.size += 1
@@ -34,24 +34,24 @@ class HashTable:
             new_node.next = self.table[index] 
             self.table[index] = new_node 
             self.size += 1
-  
+
     def search(self, key): 
         index = self._hash(key) 
-  
+
         current = self.table[index] 
         while current: 
             if current.key == key: 
                 return current.value 
             current = current.next
-  
+
         raise KeyError(key) 
-  
+
     def remove(self, key): 
         index = self._hash(key) 
-  
+
         previous = None
         current = self.table[index] 
-  
+
         while current: 
             if current.key == key: 
                 if previous: 
@@ -62,15 +62,24 @@ class HashTable:
                 return
             previous = current 
             current = current.next
-  
+
         raise KeyError(key) 
-  
+
     def __len__(self): 
         return self.size 
-  
+
     def __contains__(self, key): 
         try: 
             self.search(key) 
             return True
         except KeyError: 
             return False
+
+    def keys(self):
+        keys = []
+        for bucket in self.table:
+            current = bucket
+            while current:
+                keys.append(current.key)
+                current = current.next
+        return keys

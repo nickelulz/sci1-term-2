@@ -10,9 +10,12 @@ def calculate_standing_distribution_2d(probabilities):
     p = probabilities[0][0] / 100
     q = probabilities[1][0] / 100
     denom = (1 - p + q)
+
     if denom == 0:
         raise ValueError(f'returned zero: p {p}, q {q}')
+
     r = q / denom
+
     return np.array([r, 1-r]) * 100
 
 def calculate_theoretical_distribution(probabilities) -> np.array:
@@ -43,7 +46,7 @@ def calculate_variance(system) -> np.float64:
     for coin_prob in (system.probabilities / 100):
         coin_variance = np.sum(np.abs(coin_prob - 1 / system.number_of_outputs))
         total += coin_variance
-    return total
+    return round(total, 1)
 
 class CoinFlipEngine():
     def __init__(self, probabilities, markov, size, initial_coin_index=0, memory_depth=1, name=None):
@@ -84,17 +87,18 @@ class CoinFlipEngine():
             # This is the output
             if random_number < threshold:
                 self.memory.append(output_index)
-            
+           
                 # choose next coin
                 if len(self.memory) == self.memory_depth:
 
                     # select next coin by searching the markov hashtable
-                    self.current_coin_index = self.markov[self.current_coin_index].search(tuple(self.memory))
-                    self.memory = []
+                    next_coin = markov_next(self.markov, self.current_coin_index, self.memory)
+
                     if print_on_switch:
-                        print(f'Coin Decision: {self.current_coin_index} -> ' + 
-                              f'{self.markov[self.current_coin_index][output_index]} due to output {output_index}', 
-                              file=output)
+                        print(f'Coin Decision: {self.current_coin_index} -> {next_coin} due to output {self.memory}', file=output)
+
+                    self.current_coin_index = next_coin
+                    self.memory = []
 
                 return output_index
 

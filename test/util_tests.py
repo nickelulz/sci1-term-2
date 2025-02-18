@@ -66,5 +66,13 @@ class UtilTests(TestCase):
         self.assertEqual(len(markov_ht), 1)
         self.assertEqual(markov_ht.search((0)), 0)
 
+    def test_markov_interpreter(self):
+        markov_arr = np.array([1, 0])
+        markov_ht = HashTable(2)
+        markov_ht.insert((0,), 1)
+        markov_ht.insert((1,), 0)
+        interpreted = interpret_individual_markov(markov_arr)
+        self.assertEqual(interpreted.keys(), markov_ht.keys())
+
 if __name__ == '__main__':
     unittest.main()

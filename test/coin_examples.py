@@ -2,6 +2,7 @@ import sys
 sys.path.insert(1,'../src')
 from coins import CoinFlipEngine
 from util import interpret_simple_markov
+from hash_table import HashTable
 import numpy as np
 
 DEFAULT_COIN = CoinFlipEngine(
@@ -41,19 +42,20 @@ SIMPLE_MARKOV_3 = CoinFlipEngine(
 
 # n=2 coin with memory=3
 MARKOV_MEMORY_1 = HashTable(8)
-MARKOV_MEMORY_1.insert((0,0,0), 0)
+MARKOV_MEMORY_1.insert((0,0,0), 1)
 MARKOV_MEMORY_1.insert((0,0,1), 0)
-MARKOV_MEMORY_1.insert((0,1,0), 0)
-MARKOV_MEMORY_1.insert((0,1,1), 0)
-MARKOV_MEMORY_1.insert((1,0,0), 1)
+MARKOV_MEMORY_1.insert((0,1,0), 1)
+MARKOV_MEMORY_1.insert((0,1,1), 1)
+MARKOV_MEMORY_1.insert((1,0,0), 0)
 MARKOV_MEMORY_1.insert((1,0,1), 1)
 MARKOV_MEMORY_1.insert((1,1,0), 1)
-MARKOV_MEMORY_1.insert((1,1,1), 1)
+MARKOV_MEMORY_1.insert((1,1,1), 0)
 
 MARKOV_MEMORY_3_COIN = CoinFlipEngine(
     probabilities = np.array([[30, 70], [60, 40]]),
     markov = [ MARKOV_MEMORY_1, MARKOV_MEMORY_1 ],
     size = 2,
+    memory_depth = 3,
     name = 'Markov 2x2 with Memory 3'
 )
 

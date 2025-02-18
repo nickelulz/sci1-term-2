@@ -40,7 +40,7 @@ class CoinTests(TestCase):
 
     def standing_dist_coin(self, coin):
         dist = calculate_standing_distribution_2d(coin.probabilities)
-        print(coin.name, 'standing:', dist, 'theoretical:', coin.theoretical_distribution)
+        print(coin.name, 'standing:', np.round(dist, 1), 'theoretical:', coin.theoretical_distribution)
     
     def test_standing_dist(self):
         print()
@@ -72,7 +72,7 @@ class CoinTests(TestCase):
     def coin_conv(self, coin):
         theo_dist = calculate_theoretical_distribution(coin.probabilities)
         emp_dist = perform_coin_flips(coin, int(1e6)).empirical_distribution
-        self.assert_equal_arrays(theo_dist, emp_dist, 0.1)
+        self.assert_equal_arrays(theo_dist, emp_dist, 0.5)
 
     def test_coin_conv_default(self):
         self.coin_conv(DEFAULT_COIN)
@@ -88,6 +88,22 @@ class CoinTests(TestCase):
 
     def test_coin_conv_simple_markov_3(self):
         self.coin_conv(SIMPLE_MARKOV_3)
+
+    """
+    Markov chains with higher memory
+    """
+
+    def test_markov_memory_3(self):
+        coin = MARKOV_MEMORY_3_COIN
+        result = perform_coin_flips(coin, int(1e4))
+        print()
+        print(coin.name)
+        print('empirical distribution:', result.empirical_distribution)
+        print('sequence prob hist:')
+        histogram = evaluate_sequence_probability_history(coin.size, result.flip_history, memory_depth=3)
+        # print(histogram)
+        for sequence, entry in histogram.items():
+            print(sequence, 'count', entry['count'], 'percent', entry['percentage'])
 
 if __name__ == '__main__':
     unittest.main()

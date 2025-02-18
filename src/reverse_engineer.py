@@ -1,8 +1,20 @@
 import numpy as np
 from coins import CoinFlipEngine
+from hash_table import HashTable
+from util import markov_next
 
-def Calix(output_data_sequence, markov, size, delta=0.01, output=False):
-    # n = number of outputs
+def reverse_engineer_model(output_data_sequence: list[int], input_model: CoinFlipEngine, delta = 0.01, output = False) -> list[CoinFlipEngine]:
+    calix_output = Calix(output_data_sequence, input_model.markov, input_model.memory_depth, input_model.size, delta, output)
+    
+    return [ calix_output ]
+
+def Calix(output_data_sequence: list[int], markov: list[HashTable], memory_depth: int, size: int, delta, output) -> CoinFlipEngine:
+    """
+    Calix is the heavily informed system:
+
+    (1) informed about memory depth and markov rules
+    (2) works only on square systems
+    """
     estimated_model = np.random.rand(size, size) * 100
     observations = np.zeros(shape=(size, size))
     
@@ -10,10 +22,13 @@ def Calix(output_data_sequence, markov, size, delta=0.01, output=False):
     current_coin = 0
     epoch = 0
 
+    if output:
+        print('Beginning Calix Mk. 1 Estimation')
+
     for flip in output_data_sequence:
-        next_coin = markov[current_coin][flip]
+        next_coin = markov_next(markov, current_coin, memory)
         observations[current_coin][next_coin] += 1
-        curren_coin = next_coin
+        current_coin = next_coin
 
         row_sums = observations.sum(axis=1, keepdims=True)
         row_sums[row_sums == 0] = 1
@@ -32,3 +47,9 @@ def Calix(output_data_sequence, markov, size, delta=0.01, output=False):
         markov = np.array(markov),
         size = size,
         initial_coin_index = 0)
+
+def Freakbob(output_data_sequence, size, memory_depth, delta, output):
+    """
+    Freakbob is a lightly informed system, knowing only the size and memory depth but not the markov rules
+    """
+    raise NotImplementedError()
