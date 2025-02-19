@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import numpy as np
 import sys
 from random import random
-from hash_table import HashTable
 from collections import defaultdict
 
 @dataclass

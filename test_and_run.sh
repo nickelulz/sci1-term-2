@@ -1,5 +1,4 @@
 # test
-ls
 cd test
 ./all_tests.sh
 cd ..

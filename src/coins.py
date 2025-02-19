@@ -33,7 +33,7 @@ def calculate_model_complexity(system) -> np.float64:
     """
     Calculates the complexity of a CoinFlipEngine model based on size, variance, and memory
     """
-    return (system.memory_depth - 1) + system.variance * system.size
+    return round(system.memory_depth ** 2 * system.variance * system.size, 1)
 
 def calculate_variance(system) -> np.float64:
     """
@@ -49,7 +49,8 @@ def calculate_variance(system) -> np.float64:
     return round(total, 1)
 
 class CoinFlipEngine():
-    def __init__(self, probabilities, markov, size, initial_coin_index=0, memory_depth=1, name=None):
+    def __init__(self, probabilities: np.array, markov: np.array, size: int, 
+                 memory_depth = 1, initial_coin_index = 0, name = None):
         # only working with square matricies
         self.size = size
         self.number_of_coins = size
@@ -71,7 +72,7 @@ class CoinFlipEngine():
         self.variance = calculate_variance(self)
         self.complexity = calculate_model_complexity(self)
 
-    def reset_markov(self):
+    def reset_markov(self) -> None:
         self.current_coin_index = self.initial_coin_index
         self.memory = []
 
@@ -87,12 +88,10 @@ class CoinFlipEngine():
             # This is the output
             if random_number < threshold:
                 self.memory.append(output_index)
-           
+
                 # choose next coin
                 if len(self.memory) == self.memory_depth:
-
-                    # select next coin by searching the markov hashtable
-                    next_coin = markov_next(self.markov, self.current_coin_index, self.memory)
+                    next_coin = self.markov[self.current_coin_index][tuple(self.memory)]
 
                     if print_on_switch:
                         print(f'Coin Decision: {self.current_coin_index} -> {next_coin} due to output {self.memory}', file=output)

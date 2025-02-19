@@ -1,14 +1,51 @@
 import unittest
 from unittest import TestCase
-
+from tabulate import tabulate
 from coin_examples import *
 
 import sys
 sys.path.insert(1,'../src')
 from coins import *
 from flips import *
+from reverse_engineer import reverse_engineer_model
+from benchmarker import calculate_model_error
 
 class CoinTests(TestCase):
+    """
+    Stats for All Coins
+    """
+    def test_coin_stats_all(self):
+        header = [ 'Name', 'Complexity', 'Variance', 'Theoretical', 'Standing', 'Empirical', 'Rev. Eng. Errors', 'Calix' ]
+        table = []
+
+        for coin in ALL_COINS:
+            standing_dist = ''
+            if coin.size == 2:
+                standing_dist = np.round(calculate_standing_distribution_2d(coin.probabilities), 1)
+
+            row = [ coin.name, coin.complexity, coin.variance, coin.theoretical_distribution,
+                    standing_dist ]
+
+            result = perform_coin_flips(coin, int(1e4))
+            guessed_coins = reverse_engineer_model(result.flip_history, coin)
+            error = [calculate_model_error(coin, guessed_coin) for guessed_coin in guessed_coins]
+            error = np.round(error, 3)
+    
+            row.append(result.empirical_distribution)
+            row.append(error)
+            row.append(guessed_coins[0].theoretical_distribution)
+
+            table.append(row)
+
+        
+        table.insert(0, header)
+        print()
+        print(tabulate(table, tablefmt='grid'))
+
+    def standing_dist_coin(self, coin):
+        dist = calculate_standing_distribution_2d(coin.probabilities)
+        print(coin.name, 'standing:', np.round(dist, 1), 'theoretical:', coin.theoretical_distribution) 
+
     """
     Helpers
     """
@@ -37,15 +74,6 @@ class CoinTests(TestCase):
 
     def test_theo_dist_1(self):
         self.theo_dist_calc([[50, 50],[50, 50]], [50, 50])
-
-    def standing_dist_coin(self, coin):
-        dist = calculate_standing_distribution_2d(coin.probabilities)
-        print(coin.name, 'standing:', np.round(dist, 1), 'theoretical:', coin.theoretical_distribution)
-    
-    def test_standing_dist(self):
-        print()
-        for coin in filter(lambda coin: coin.size == 2, ALL_COINS):
-            self.standing_dist_coin(coin)
 
     """
     Direct Coin Tests

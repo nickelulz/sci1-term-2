@@ -10,13 +10,6 @@ from benchmarker import *
 from coin_examples import *
 
 class ErrorComplexityTests(TestCase):
-    def test_complexity_all(self):
-        header = [ 'Name', 'Complexity', 'Variance' ]
-        table = [ [coin.name, coin.complexity, coin.variance] for coin in ALL_COINS]
-        table.insert(0, header)
-        print()
-        print(tabulate(table, tablefmt='grid'))
-
     def relative_complexity_test(self, lesser, greater):
         self.assertTrue(lesser.complexity <= greater.complexity, f'ERR: Lesser is more complex than greater: {lesser.complexity} > {greater.complexity}')
 

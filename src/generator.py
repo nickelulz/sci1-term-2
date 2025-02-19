@@ -1,28 +1,47 @@
-from itertools import permutations
+from itertools import permutations, product
 import random
 import numpy as np
 from coins import CoinFlipEngine
 
-from util import generate_random_distribution, generate_random_markov
+def generate_random_distribution(n):
+    """
+    Generates a random distribution of n outputs that sums to 100.
+    """
+    random_values = np.random.rand(n) 
+    normalized_values = random_values / random_values.sum()
+    distribution = (normalized_values * 100).round().astype(int)
+
+    diff = 100 - distribution.sum()
+    for _ in range(abs(diff)):
+        index = np.random.choice(n)
+        distribution[index] += 1 if diff > 0 else -1
+
+    return np.array(distribution.tolist())
+
+def generate_possible_combinations(size: int, memory_depth: int) -> list[tuple]:
+    return list(product(range(size), repeat=memory_depth))
+
+def generate_random_markov_single(size: int, memory_depth: int, combinations: list[tuple]) -> dict:
+    get_random_coin = lambda: random.randint(0, size-1)
+
+    coin_markov_dict = {}
+    for output_sequence in combinations:
+        coin_markov_dict[output_sequence] = get_random_coin()
+    return coin_markov_dict
+
+def generate_random_markov(size: int, memory_depth: int) -> list[dict]:
+    combinations = generate_possible_combinations(size, memory_depth) 
+    return [ generate_random_markov_single(size, memory_depth, combinations) for coin in range(size) ] 
 
 def generate_random_model(size_range=(1,2), memory_depth_range=(1,1)):
     """
     Generates a random CoinFlipEngine model with random weights.
     """
-    size = random.randint(size_range[0], size_range[1])
-    probabilities_matrix = np.array([generate_random_distribution(size) for n in range(size)]).reshape(size, size)
-
+    size = random.randint(size_range[0], size_range[1]) 
     memory_depth = random.randint(memory_depth_range[0], memory_depth_range[1])
-    get_random_coin = lambda: random.randint(0, size)
 
-    # generate the cartesian product to get all possible combinations
-    all_possible_output_combinations = list(product(range(size), repeat=memory_depth))
-
-    markov = [] 
-    for coin in range(size):
-        coin_markov_ht = HashTable(len(all_possible_output_combinations))
-        for output_sequence in all_possible_output_combinations:
-            coin_markov_ht.insert(output_sequence, get_random_coin())
+    probabilities_matrix = np.array([generate_random_distribution(size) for n in range(size)]).reshape(size, size)
+    markov = generate_random_markov(size, memory_depth)
 
     return CoinFlipEngine(
         probabilities = probabilities_matrix,
