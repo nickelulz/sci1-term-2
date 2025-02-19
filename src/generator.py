@@ -22,11 +22,13 @@ def generate_possible_combinations(size: int, memory_depth: int) -> list[tuple]:
     return list(product(range(size), repeat=memory_depth))
 
 def generate_random_markov_single(size: int, memory_depth: int, combinations: list[tuple]) -> dict:
-    get_random_coin = lambda: random.randint(0, size-1)
+    num_combos = len(combinations)
+    associated_coins = list(range(0, size)) + random.choices(range(0, size-1), k = num_combos - size)
 
     coin_markov_dict = {}
-    for output_sequence in combinations:
-        coin_markov_dict[output_sequence] = get_random_coin()
+    for i, output_sequence in enumerate(combinations):
+        coin_markov_dict[output_sequence] = associated_coins[i]
+
     return coin_markov_dict
 
 def generate_random_markov(size: int, memory_depth: int) -> list[dict]:

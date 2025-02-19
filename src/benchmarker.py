@@ -4,7 +4,7 @@ def calculate_distribution_error(distribution_a, distribution_b):
     """
     Calculates the error between the two prrobability distributions
     """
-    return np.max(np.abs(distribution_a - distribution_b))
+    return np.sum(np.abs(distribution_a - distribution_b))
 
 def calculate_markov_error(memory_depth_a, memory_depth_b, markov_a, markov_b, size):
     """
@@ -36,10 +36,10 @@ def calculate_model_error(input_model, output_model) -> float:
     if input_model.size != output_model.size:
         return np.inf
 
-    distribution_error = calculate_distribution_error(input_model.theoretical_distribution, 
-                                                      output_model.theoretical_distribution)
+    distribution_error = calculate_distribution_error(input_model.probabilities, 
+                                                      output_model.probabilities)
     complexity_error = calculate_complexity_error(input_model.complexity, output_model.complexity)
     markov_error = calculate_markov_error(input_model.memory_depth, output_model.memory_depth, 
                                           input_model.markov, output_model.markov, input_model.size)
 
-    return distribution_error 
+    return distribution_error * complexity_error * markov_error 

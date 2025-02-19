@@ -44,7 +44,7 @@ def Calix(output_data_sequence: list[int], markov: list[dict], memory_depth: int
     row_sums = observations.sum(axis=1, keepdims=True)
     row_sums[row_sums == 0] = 1
 
-    if 0 in observations:
+    if 0 in observations and output:
         print('zero in obs')
         print(observations)
         print(markov)
