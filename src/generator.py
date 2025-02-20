@@ -5,24 +5,32 @@ from coins import CoinFlipEngine
 
 def generate_random_distribution(n):
     """
-    Generates a random distribution of n outputs that sums to 100.
+    Generates a random distribution of n outputs that sums to 100,
+    ensuring no zero values.
     """
-    random_values = np.random.rand(n) 
-    normalized_values = random_values / random_values.sum()
+    if n > 100:
+        raise ValueError("Cannot ensure nonzero values if n > 100")
+
+    # Generate random values and ensure a minimum allocation per value
+    random_values = np.random.rand(n)  
+    min_value = 0.5  # Smallest fraction to ensure nonzero allocation
+    scaled_values = random_values + min_value  # Shift all values up
+    normalized_values = scaled_values / scaled_values.sum()  # Normalize
+
+    # Scale and round to integers
     distribution = (normalized_values * 100).round().astype(int)
 
+    # Fix rounding errors to ensure sum is exactly 100
     diff = 100 - distribution.sum()
     for _ in range(abs(diff)):
         index = np.random.choice(n)
         distribution[index] += 1 if diff > 0 else -1
-    
-    def contains_zero(arr):
-        return 0 in arr
 
-    if contains_zero(distribution) == False:
-        return np.array(distribution.tolist())
-    else:
+    # lazy solution, but whatever
+    if np.sum(distribution) != 100 or 0 in distribution:
         return generate_random_distribution(n)
+    else:
+        return distribution
 
 def generate_possible_combinations(size: int, memory_depth: int) -> list[tuple]:
     return list(product(range(size), repeat=memory_depth))
@@ -41,7 +49,7 @@ def generate_random_markov(size: int, memory_depth: int) -> list[dict]:
     combinations = generate_possible_combinations(size, memory_depth) 
     return [ generate_random_markov_single(size, memory_depth, combinations) for coin in range(size) ] 
 
-def generate_random_model(size_range=(1,2), memory_depth_range=(1,1)):
+def generate_random_model(size_range=(1,2), memory_depth_range=(1,1), benchmark=False, benchmark_flips=int(1e4)):
     """
     Generates a random CoinFlipEngine model with random weights.
     """
@@ -49,11 +57,14 @@ def generate_random_model(size_range=(1,2), memory_depth_range=(1,1)):
     memory_depth = random.randint(memory_depth_range[0], memory_depth_range[1])
 
     probabilities_matrix = np.array([generate_random_distribution(size) for n in range(size)]).reshape(size, size)
+
     markov = generate_random_markov(size, memory_depth)
 
     return CoinFlipEngine(
         probabilities = probabilities_matrix,
         markov = markov,
         memory_depth = memory_depth,
-        size = size 
+        size = size,
+        benchmark = benchmark,
+        benchmark_flips = benchmark_flips
     )

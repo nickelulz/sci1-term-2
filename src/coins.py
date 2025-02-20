@@ -1,7 +1,9 @@
-from util import *
 import numpy as np
 import sys
-import random
+from random import random
+
+from util import *
+from flips import *
 
 def calculate_standing_distribution_2d(probabilities):
     """
@@ -50,15 +52,15 @@ def calculate_variance(system) -> np.float64:
 
 class CoinFlipEngine():
     def __init__(self, probabilities: np.array, markov: np.array, size: int, 
-                 memory_depth = 1, initial_coin_index = 0, name = None):
-        # only working with square matricies
+                 memory_depth = 1, initial_coin_index = 0, name = None, 
+                 benchmark = False, benchmark_flips=int(1e4)):
         self.size = size
         self.number_of_coins = size
         self.number_of_outputs = size
         self.name = name
 
         self.markov = markov
-        self.probabilities = probabilities
+        self.probabilities = np.array(probabilities)
         self.thresholds = [weights_to_ranges(probability_array) for probability_array in probabilities]
 
         self.initial_coin_index = initial_coin_index
@@ -68,9 +70,20 @@ class CoinFlipEngine():
         self.current_coin_index = initial_coin_index
         self.memory = []
 
-        self.theoretical_distribution = calculate_theoretical_distribution(probabilities)
+        if benchmark:
+            self.benchmark(benchmark_flips)
+
+    def benchmark(self, flips) -> CoinFlipResult:
+        self.theoretical_distribution = calculate_theoretical_distribution(self.probabilities)
         self.variance = calculate_variance(self)
         self.complexity = calculate_model_complexity(self)
+
+        self.benchmark_result = perform_coin_flips(self, flips)
+        self.empirical_distribution = self.benchmark_result.empirical_distribution
+        self.sequence_histogram = evaluate_sequence_probability_history(self.number_of_outputs, 
+                                                                        self.benchmark_result.flip_history, 
+                                                                        self.memory_depth)
+        return self.benchmark_result
 
     def reset_markov(self) -> None:
         self.current_coin_index = self.initial_coin_index
@@ -82,15 +95,17 @@ class CoinFlipEngine():
         Returns the output and stores the next coin in the markov chain
         """
         coin_thresholds = self.thresholds[self.current_coin_index]
-        random_number = random.random()
+        random_number = random()
 
         for output_index, threshold in enumerate(coin_thresholds):
             # This is the output
-            if random_number < threshold:
+            if random_number <= threshold:
                 self.memory.append(output_index)
 
                 # choose next coin
                 if len(self.memory) == self.memory_depth:
+                    if not (tuple(self.memory) in self.markov[self.current_coin_index]):
+                        print(self.size, self.memory, self.memory_depth, self.markov)
                     next_coin = self.markov[self.current_coin_index][tuple(self.memory)]
 
                     if print_on_switch:
@@ -100,6 +115,12 @@ class CoinFlipEngine():
                     self.memory = []
 
                 return output_index
+
+        # did not hit a threshold
+        print('Error! Did not hit a threshold')
+        print(random_number, coin_thresholds, self.probabilities[self.current_coin_index])
+        print(self.probabilities)
+        print(set(self.markov[self.current_coin_index].values()))
 
     def __str__(self) -> str:
         return (

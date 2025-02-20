@@ -15,7 +15,8 @@ DEFAULT_COIN = CoinFlipEngine(
                               [50, 50]]),
     markov = DEFAULT_2X2_MARKOV,
     size = 2,
-    name = 'Default Coin'
+    name = 'Default Coin',
+    benchmark = True
 )
 
 NON_COIN = CoinFlipEngine(
@@ -23,7 +24,8 @@ NON_COIN = CoinFlipEngine(
     markov = interpret_simple_markov(
         np.array([[0]])),
     size = 1,
-    name = 'Non Coin'
+    name = 'Non Coin',
+    benchmark = True
 )
 
 SIMPLE_MARKOV_1 = CoinFlipEngine(
@@ -33,7 +35,8 @@ SIMPLE_MARKOV_1 = CoinFlipEngine(
         np.array([[0, 1], 
                   [1, 0]])),
     size = 2,
-    name = 'Simple Markov 1'
+    name = 'Simple Markov 1',
+    benchmark = True
 )
 
 SIMPLE_MARKOV_2 = CoinFlipEngine(
@@ -43,7 +46,8 @@ SIMPLE_MARKOV_2 = CoinFlipEngine(
         np.array([[0, 1], 
                   [0, 1]])),
     size = 2,
-    name = 'Simple Markov 2'
+    name = 'Simple Markov 2',
+    benchmark = True
 )
 
 SIMPLE_MARKOV_3 = CoinFlipEngine(
@@ -53,7 +57,8 @@ SIMPLE_MARKOV_3 = CoinFlipEngine(
         np.array([[0, 1], 
                   [0, 1]])),
     size = 2,
-    name = 'Simple Markov 3'
+    name = 'Simple Markov 3',
+    benchmark = True
 )
 
 # n=2 coin with memory=3
@@ -73,7 +78,8 @@ MARKOV_MEMORY_3_COIN = CoinFlipEngine(
     markov = [ MARKOV_MEMORY_1, MARKOV_MEMORY_1 ],
     size = 2,
     memory_depth = 3,
-    name = 'Markov 2x2 with Memory 3'
+    name = 'Markov 2x2 with Memory 3',
+    benchmark = True
 )
 
 ALL_COINS = [ DEFAULT_COIN, NON_COIN, SIMPLE_MARKOV_1, SIMPLE_MARKOV_2, SIMPLE_MARKOV_3, MARKOV_MEMORY_3_COIN ]

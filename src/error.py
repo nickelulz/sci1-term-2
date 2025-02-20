@@ -1,11 +1,12 @@
 import numpy as np
+from coins import CoinFlipEngine
 
-def calculate_probability_error(probability_a, probability_b):
+def calculate_absolute_difference_sum(dist_a, dist_b):
     """
     Calculates the error between the two prrobability probabilitys
     """
 
-    return np.sum(np.abs(probability_a - probability_b))
+    return np.sum(np.abs(dist_a - dist_b))
 
 def calculate_markov_error(memory_depth_a, memory_depth_b, markov_a, markov_b, size):
     """
@@ -29,10 +30,7 @@ def calculate_complexity_error(complexity_a, complexity_b):
 
     return complexity_pe
 
-def calculate_distribution_error(dist_a, dist_b):
-    return np.sum(np.abs(dist_a-dist_b))
-
-def calculate_model_error(input_model, output_model, input_flip_history, output_flip_history) -> float:
+def calculate_model_error(input_model: CoinFlipEngine, output_model: CoinFlipEngine) -> float:
     """
     Compares two CoinFlipEngine models by calculating the error 
     of one model against the other.
@@ -40,14 +38,14 @@ def calculate_model_error(input_model, output_model, input_flip_history, output_
     if input_model.size != output_model.size:
         return np.inf
     
-    distribution_error = calculate_distribution_error(input_flip_history, output_flip_history)
-    probability_error = calculate_probability_error(input_model.probabilities, 
-                                                      output_model.probabilities)
+    distribution_error = calculate_absolute_difference_sum(input_model.empirical_distribution, 
+                                                           output_model.empirical_distribution)
+    probability_error = calculate_absolute_difference_sum(input_model.probabilities, output_model.probabilities)
     complexity_error = calculate_complexity_error(input_model.complexity, output_model.complexity)
     markov_error = calculate_markov_error(input_model.memory_depth, output_model.memory_depth, 
                                           input_model.markov, output_model.markov, input_model.size)
         
-    total_error = probability_error * markov_error * distribution_error
-    #if (total_error > 12):
-    #    print(f"\nHigh Error Detected, input model: {input_model}, output model: {output_model}")
-    return total_error
+    return distribution_error * probability_error
+
+def calculate_model_error_all(input_model: CoinFlipEngine, output_models_list: list[CoinFlipEngine]) -> np.array:
+    return np.array([calculate_model_error(input_model, output_model) for output_model in output_models_list])

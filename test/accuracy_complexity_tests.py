@@ -5,7 +5,7 @@ from unittest import TestCase
 import sys
 sys.path.insert(1,'../src')
 from coins import *
-from benchmarker import * 
+from error import *
 
 from coin_examples import *
 

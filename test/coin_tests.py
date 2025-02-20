@@ -8,14 +8,14 @@ sys.path.insert(1,'../src')
 from coins import *
 from flips import *
 from reverse_engineer import reverse_engineer_model
-from benchmarker import calculate_model_error
+from error import calculate_model_error_all
 
 class CoinTests(TestCase):
     """
     Stats for All Coins
     """
     def test_coin_stats_all(self):
-        header = [ 'Name', 'Complexity', 'Variance', 'Theoretical', 'Standing', 'Empirical', 'Rev. Eng. Errors', 'Calix' ]
+        header = [ 'Name', 'Complexity', 'Variance', 'Theoretical', 'Standing', 'Empirical', 'Calix', 'Calix Error' ]
         table = []
 
         for coin in ALL_COINS:
@@ -26,14 +26,15 @@ class CoinTests(TestCase):
             row = [ coin.name, coin.complexity, coin.variance, coin.theoretical_distribution,
                     standing_dist ]
 
-            result = perform_coin_flips(coin, int(1e4))
-            guessed_coins = reverse_engineer_model(result.flip_history, coin)
-            error = [calculate_model_error(coin, guessed_coin) for guessed_coin in guessed_coins]
-            error = np.round(error, 3)
+            guessed_coins = reverse_engineer_model(coin.benchmark_result.flip_history, coin, benchmark=True)
+            errors = calculate_model_error_all(coin, guessed_coins)
+            errors = np.round(errors, 3) 
     
-            row.append(result.empirical_distribution)
-            row.append(error)
-            row.append(guessed_coins[0].theoretical_distribution)
+            row.append(coin.empirical_distribution)
+
+            # Calix
+            row.append(guessed_coins[0].empirical_distribution)
+            row.append(errors[0])
 
             table.append(row)
 
