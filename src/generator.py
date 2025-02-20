@@ -15,8 +15,14 @@ def generate_random_distribution(n):
     for _ in range(abs(diff)):
         index = np.random.choice(n)
         distribution[index] += 1 if diff > 0 else -1
+    
+    def contains_zero(arr):
+        return 0 in arr
 
-    return np.array(distribution.tolist())
+    if contains_zero(distribution) == False:
+        return np.array(distribution.tolist())
+    else:
+        return generate_random_distribution(n)
 
 def generate_possible_combinations(size: int, memory_depth: int) -> list[tuple]:
     return list(product(range(size), repeat=memory_depth))
