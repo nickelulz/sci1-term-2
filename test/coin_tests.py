@@ -15,7 +15,7 @@ class CoinTests(TestCase):
     Stats for All Coins
     """
     def test_coin_stats_all(self):
-        header = [ 'Name', 'Complexity', 'Variance', 'Theoretical', 'Standing', 'Empirical', 'Calix', 'Calix Error' ]
+        header = [ 'Name', 'Complexity', 'Variance', 'Theoretical', 'Standing', 'Empirical', 'Calix', 'Calix Error', 'Sleepr', 'Sleeper Error' ]
         table = []
 
         for coin in ALL_COINS:
@@ -26,7 +26,8 @@ class CoinTests(TestCase):
             row = [ coin.name, coin.complexity, coin.variance, coin.theoretical_distribution,
                     standing_dist ]
 
-            guessed_coins = reverse_engineer_model(coin.benchmark_result.flip_history, coin, benchmark=True)
+            guessed_coins = reverse_engineer_model(coin.benchmark_result.flip_history, 
+                                                   coin, benchmark=True, debug=True)
             errors = calculate_model_error_all(coin, guessed_coins)
             errors = np.round(errors, 3) 
     
@@ -35,6 +36,10 @@ class CoinTests(TestCase):
             # Calix
             row.append(guessed_coins[0].empirical_distribution)
             row.append(errors[0])
+
+            # Sleeper 
+            row.append(guessed_coins[1].empirical_distribution)
+            row.append(errors[1])
 
             table.append(row)
 

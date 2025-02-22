@@ -68,3 +68,39 @@ def generate_random_model(size_range=(1,2), memory_depth_range=(1,1), benchmark=
         benchmark = benchmark,
         benchmark_flips = benchmark_flips
     )
+
+def markov_reaches_all(markovs: list[dict], size: int):
+    reachable_coins = ()
+
+    for markov in markovs:
+        reachable_coins = reachable_coins + tuple(markov.values())
+
+    reachable_coins = set(reachable_coins)
+    return len(reachable_coins) == size
+
+def generate_all_possible_markov_system(size: int, memory_depth: int) -> list[list[dict]]:
+    """
+    Generates a list of all of the possible markov lists that could exist given a
+    size and a memory depth.  Used for reverse engineering by Freakbob.
+    """
+    combinations = list(product(range(size), repeat=memory_depth))
+    
+    # Generate all possible transition mappings for a single Markov dictionary
+    all_possible_markov_single = list(product(range(size), repeat=len(combinations)))
+    
+    # Convert tuples to dictionary format
+    all_possible_markov_dicts = [
+        {comb: mapping[i] for i, comb in enumerate(combinations)}
+        for mapping in all_possible_markov_single
+    ]
+    
+    # Generate all possible ways to assign Markov dicts to `size` coins
+    all_possible_markov_systems = list(product(all_possible_markov_dicts, repeat=size))
+
+    valid_markovs = []
+    for system in all_possible_markov_systems:
+        system = list(system)
+        if markov_reaches_all(system, size):
+            valid_markovs.append(system)
+
+    return valid_markovs 
