@@ -114,7 +114,7 @@ class CoinFlipEngine():
                     self.current_coin_index = next_coin
                     self.memory = []
 
-                return output_index
+                return output_index, self.current_coin_index
 
         # did not hit a threshold
         print('Error! Did not hit a threshold')

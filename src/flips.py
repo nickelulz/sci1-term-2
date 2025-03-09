@@ -10,15 +10,18 @@ class CoinFlipResult:
     empirical_distribution: np.array
     flip_history: np.array
     percent_history: np.array
+    state_data: np.array
 
 def perform_coin_flips(coin, number_of_flips, print_on_switch=False, output_file=sys.stdout):
     count_distribution = [0] * coin.number_of_outputs
     percent_data = [[0] for _ in range(coin.number_of_outputs)]
     flip_data = []
+    state_data = []
 
     for flips in range(1, number_of_flips + 1):
-        result_output = coin.flip(print_on_switch, output_file)
-        flip_data.append(result_output)        
+        result_output, next_state = coin.flip(print_on_switch, output_file)
+        flip_data.append(result_output) 
+        state_data.append(next_state)
         count_distribution[result_output] += 1
 
         for output in range(coin.number_of_outputs):
@@ -27,7 +30,11 @@ def perform_coin_flips(coin, number_of_flips, print_on_switch=False, output_file
     empirical_probabilities = (np.array(count_distribution) / number_of_flips) * 100
     coin.reset_markov()
 
-    return CoinFlipResult(count_distribution, empirical_probabilities, np.array(flip_data), np.array(percent_data) * 100)
+    return CoinFlipResult(count_distribution,
+                          empirical_probabilities, 
+                          np.array(flip_data), 
+                          np.array(percent_data) * 100,
+                          np.array(state_data))
 
 def evaluate_sequence_probability_history(num_outputs, flip_history, memory_depth=2) -> dict:
     sequence_counts = defaultdict(int)

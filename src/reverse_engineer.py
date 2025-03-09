@@ -2,25 +2,23 @@ import numpy as np
 from coins import CoinFlipEngine
 from error import calculate_model_error
 from generator import generate_all_possible_markov_system
-
-# algorithms
-from re_algorithms.sleeper import Sleeper
+from sleeper import Sleeper
 
 def reverse_engineer_model(output_data_sequence: list[int], input_model: CoinFlipEngine, delta = 0.01, debug = False, benchmark=False, benchmark_flips=int(1e4)) -> list[CoinFlipEngine]:
     if debug and input_model.name is not None:
         print(f'Coin is {input_model.name}')
+        print(f'Size: {input_model.size}, Memory Depth: {input_model.memory_depth}')
+        print(f'Probabilities')
+        print(input_model.probabilities)
+        print(f'Markov')
+        print(input_model.markov)
 
     calix_output = Calix(output_data_sequence, input_model.markov, 
                          input_model.memory_depth, input_model.size, 
-                         delta, debug, benchmark_flips)
-    # freakbob_output = Freakbob(input_model, output_data_sequence, input_model.size, 
-    #                            input_model.memory_depth, delta, debug, benchmark_flips)
-    sleeper_output = Sleeper(output_data_sequence, input_model.memory_depth, 
-                             input_model.size, debug)
-    
-    models = [ calix_output, sleeper_output ]
+                         delta, debug, benchmark_flips) 
+    # sleeper_output = Sleeper(output_data_sequence, input_model.memory_depth, input_model.size, debug)
 
-    return models
+    return calix_output #, sleeper_output
 
 def Calix(output_data_sequence: list[int], markov: list[dict], memory_depth: int, size: int, delta, debug, benchmark_flips) -> CoinFlipEngine:
     """
@@ -66,9 +64,9 @@ def Calix(output_data_sequence: list[int], markov: list[dict], memory_depth: int
         benchmark = True,
         benchmark_flips = benchmark_flips)
 
-def Freakbob(input_model, output_data_sequence, size, memory_depth, delta, debug, benchmark_flips):
+def Ajani(input_model, output_data_sequence, size, memory_depth, delta, debug, benchmark_flips):
     """
-    Freakbob is a lightly informed system, knowing only the size and memory depth 
+    Ajani is a lightly informed system, knowing only the size and memory depth 
     but not the markov rules.
 
     It generates all possible markov arrays and reverse engineers on each, then
@@ -80,7 +78,7 @@ def Freakbob(input_model, output_data_sequence, size, memory_depth, delta, debug
     """
 
     if debug:
-        print('Beginning Freakbob Estimation')
+        print('Beginning Ajani Estimation')
 
     all_possible_markovs = generate_all_possible_markov_system(size, memory_depth)
     num_markovs = len(all_possible_markovs)
@@ -90,7 +88,7 @@ def Freakbob(input_model, output_data_sequence, size, memory_depth, delta, debug
 
     for i, markov in enumerate(all_possible_markovs):
         if debug:
-            print(f'Freakbob Estimation {i+1}/{num_markovs}')
+            print(f'Ajani Estimation {i+1}/{num_markovs}')
         guess = Calix(output_data_sequence, markov, memory_depth, size, delta, debug, benchmark_flips)
         error = calculate_model_error(input_model, guess)
 

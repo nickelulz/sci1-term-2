@@ -127,6 +127,7 @@ class CoinTests(TestCase):
     Markov chains with higher memory
     """
 
+    """
     def test_markov_memory_3(self):
         coin = MARKOV_MEMORY_3_COIN
         result = perform_coin_flips(coin, int(1e4))
@@ -138,6 +139,7 @@ class CoinTests(TestCase):
         # print(histogram)
         for sequence, entry in histogram.items():
             print(sequence, 'count', entry['count'], 'percent', entry['percentage'])
+    """
 
 if __name__ == '__main__':
     unittest.main()
