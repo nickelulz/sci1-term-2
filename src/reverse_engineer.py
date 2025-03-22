@@ -29,20 +29,19 @@ def Calix(output_data_sequence: list[int], markov: list[dict], memory_depth: int
     """
     coin_output_histogram = np.zeros(shape=(size, size)) 
     current_coin = 0
-    memory = []
+    memory = output_data_sequence[:memory_depth]
     num_flips = len(output_data_sequence)
 
     if debug:
-        print('Beginning Calix Mk. 1 Estimation')
+        print('Beginning Calix Mk. 2 Estimation')
 
     for epoch, output in enumerate(output_data_sequence):
+        next_coin = markov[current_coin][tuple(memory)]
+        current_coin = next_coin
+        del memory[0]
         memory.append(output)
-        coin_output_histogram[current_coin][output] += 1
+        coin_output_histogram[current_coin][output] += 1        
 
-        if len(memory) == memory_depth:
-            next_coin = markov[current_coin][tuple(memory)]
-            current_coin = next_coin
-            memory = [] 
 
         if debug and (epoch + 1) % 2500 == 0: 
             print(f"Epoch {epoch + 1}/{num_flips}.")
