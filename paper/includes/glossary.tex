@@ -1,0 +1,59 @@
+\newglossaryentry{stochastic}{
+    name=stochastic,
+    description={influenced by random behavior}
+}
+
+\newglossaryentry{memory depth}{
+    name=memory depth,
+    description={the length of past outputs in a markov chain that directly influence the outcome of the next output}
+}
+
+\newglossaryentry{state}{
+    name=state,
+    description={a member condition/section within a markov chain that holds distinct weights or rules for producing outputs}
+}
+
+\newglossaryentry{output}{
+    name=output,
+    description={the observed produced result of a markov chain by any singular state}
+}
+
+\newglossaryentry{output-specific variance}{
+    name=output-specific variance,
+    description={a measure of the deviation of a specific output probability from its unbiased equivalent (100\% divided by the number of possible outputs) as the absolute difference between the two}
+}
+
+\newglossaryentry{coin-wide variance}{
+    name=coin-wide variance,
+    description={the sum of the output-specific variances for each output probability within a coin's probability distribution}
+}
+
+\newglossaryentry{system-wide variance}{
+    name=system-wide variance,
+    description={the sum of all coin-wide variances for every coin within a system}
+}
+
+\newglossaryentry{probability distribution}{
+    name=probability distribution,
+    description={the discrete probability density distribution of length $n$ for producing an output $o \in \{0, 1, 2, \dots, n\}$}
+}
+
+\newglossaryentry{observed probability distribution}{
+    name=observed probability distribution,
+    description={the directly observed probability distribution (based on a string of outputs)}
+}
+
+\newglossaryentry{hidden probability distribution}{
+    name=hidden probability distribution,
+    description={the probability distributions held by each coin in the markov chain}
+}
+
+\newglossaryentry{standing distribution}{
+    name=standing distribution,
+    description={the long-term \gls{observed probability distribution} of a markov chain}
+}
+
+\newglossaryentry{transition rules}{
+    name=transition rules,
+    description={a lookup-table of mappings of outputs of size $m$ (\gls{memory depth}) to the next \gls{state}}
+}

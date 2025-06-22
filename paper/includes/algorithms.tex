@@ -1,0 +1,37 @@
+\section{Reverse Engineering Algorithm}\label{appendix:algorithms}
+\begin{algorithmic}
+\Procedure{Reverse-Engineer}{sequence, $n$, $m$, $T$}
+    \State coins/outputs \textbf{is} $\{0, 1, 2, \dots, n\}$
+    \State histogram \textbf{is} $n \times n$ matrix of zeroes
+    \State memory \textbf{is} empty list
+    \State current-coin \textbf{is} $S_0$ \\
+
+    \Comment{\parbox{0.7\linewidth}{\textit{Iterate through the output sequence and follow the transitions using the transition matrix to build a histogram counting the number of times each coin generated a specific output.}}}
+
+    \ForAll{output \textbf{in} sequence}
+        \State histogram(current-coin, output) $\mathrel{+{=}} 1$
+        \State \textbf{append} output \textbf{to} memory \\
+        
+        \If{\textbf{length of} memory \textbf{equals} $m$}
+            \State current-coin \textbf{is} $T$(current-coin, memory)
+            \State \textbf{clear} memory
+        \EndIf
+    \EndFor
+
+    \Comment{\parbox{0.7\linewidth}{\textit{Convert the list of histograms into individual probability distributions for each coin by calculating a sum of outputs for each coin and dividing the count for a given output by the output sum for that coin.}}}
+
+    \State probabilities \textbf{is} $n \times n$ matrix of zeroes
+    
+    \ForAll{coin \textbf{in} coins}
+        \State total $:=$ 0
+        \ForAll{ouput \textbf{in} outputs}
+            \State total $\mathrel{+{=}}$ histogram(coin, output)
+        \EndFor
+        \ForAll{output \textbf{in} outputs}
+            \State probabilities(coin, output) = histogram(coin, output) / total
+        \EndFor
+    \EndFor 
+    
+    \State \Return \textbf{new coin with} probabilities, $T$
+\EndProcedure
+\end{algorithmic}

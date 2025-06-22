@@ -1,0 +1,21 @@
+\begin{tikzpicture}[node distance=2.5cm]
+
+    % Nodes
+    \node (generator) [process, fill=blue!30] {Generator};
+    \node (inputmodel) [process, below of=generator, fill=yellow!30] {Input Model};
+    \node (interpreter) [process, right of=inputmodel, xshift=5cm, fill=blue!30] {Interpreter};
+    \node (outputmodel) [process, below of=interpreter, fill=yellow!30] {Output Model};
+    \node (benchmarker) [process, below right of=inputmodel, xshift=2.5cm, yshift=-2.5cm, fill=blue!30] {Benchmarker};
+    \node (error) [startstop, below of=benchmarker, fill=red!40] {Error Metric};
+    \node (complexity) [startstop, left of=inputmodel, xshift=-2.5cm, fill=red!40] {Complexity Metric};
+
+    % Arrows
+    \draw [arrow] (generator) -- (inputmodel);
+    \draw [arrow] (inputmodel) -- (interpreter);
+    \draw [arrow] (interpreter) -- (outputmodel);
+    \draw [arrow] (inputmodel) |- (benchmarker);
+    \draw [arrow] (outputmodel) |- (benchmarker);
+    \draw [arrow] (benchmarker) -- (error);
+    \draw [arrow] (inputmodel) -- (complexity);
+
+\end{tikzpicture}

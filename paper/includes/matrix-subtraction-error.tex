@@ -1,0 +1,32 @@
+\begin{center}
+\begin{tikzpicture}
+
+    % Transition Matrices
+    \node (P1) {
+        $P_1 = \begin{bmatrix} 0.2 & 0.8 \\ 0.7 & 0.3 \end{bmatrix}$
+    };
+    
+    \node (P2) [right=3cm of P1] {
+        $P_2 = \begin{bmatrix} 0.5 & 0.5 \\ 0.5 & 0.5 \end{bmatrix}$
+    };
+    
+    % Absolute Difference Matrix
+    \node (AbsDiff) [below=1.5cm of $(P1)!0.5!(P2)$] {
+        $\left| P_1 - P_2 \right| = 
+        \begin{bmatrix} 
+        |0.2 - 0.5| & |0.8 - 0.5| \\ 
+        |0.7 - 0.5| & |0.3 - 0.5| 
+        \end{bmatrix} =
+        \begin{bmatrix} 
+        0.3 & 0.3 \\ 
+        0.2 & 0.2 
+        \end{bmatrix}$
+    };
+
+    % Summation Step
+    \node (Sum) [below=1.5cm of AbsDiff] {
+        $\sum \left| P_1 - P_2 \right| = 0.3 + 0.3 + 0.2 + 0.2 = \mathbf{1.0}$
+    };
+
+\end{tikzpicture}
+\end{center}

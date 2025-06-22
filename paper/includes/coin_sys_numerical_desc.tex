@@ -1,0 +1,20 @@
+\begin{tikzpicture}
+
+    % Transition Matrix (Left Side)
+    \node (T) {$P = \begin{bmatrix} P_A \\ P_B \end{bmatrix} = 
+    \begin{bmatrix} 0.2 & 0.8 \\ 0.7 & 0.3 \end{bmatrix}$};
+
+    % Table (Right Side)
+    \node (M) [right=2cm of T] {
+        $T =$
+        \begin{tabular}{c|c c}
+            Sequence & $T_{A}$ & $T_{B}$ \\ 
+            \hline\rule{0pt}{13pt}
+            (0,0) & A & B \\
+            (0,1) & A & A \\
+            (1,0) & B & A \\
+            (1,1) & B & B \\
+        \end{tabular}
+    };
+
+\end{tikzpicture}
